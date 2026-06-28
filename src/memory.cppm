@@ -27,6 +27,7 @@ void Memory::load_rom(std::fstream &rom) {
   int bytec{0};
 
   while (rom.get(byte)) {
+    // First 512 bytes are reserved, so offset
     memory[0x200 + bytec] = byte;
     bytec++;
   }

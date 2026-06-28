@@ -2,8 +2,10 @@
 #include <iostream>
 import CPU;
 import Memory;
+import Display;
 
 int main() {
+  chip8::Display display{};
   chip8::CPU cpu{};
   chip8::Memory memory{};
 
