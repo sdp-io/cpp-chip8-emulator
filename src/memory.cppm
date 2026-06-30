@@ -4,6 +4,7 @@ module;
 #include <cstdint>
 #include <fstream>
 #include <iostream>
+#include <stdexcept>
 
 export module Memory;
 
@@ -12,15 +13,66 @@ namespace chip8 {
 // 4KB of RAM as per CHIP-8 specifications
 constexpr size_t RAM_Size{4096};
 
+constexpr auto Font_Size{80};
+
+// Font data required for instruction 'FX29'
+constexpr std::array<uint8_t, Font_Size> Font_Data{
+    0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
+    0x20, 0x60, 0x20, 0x20, 0x70, // 1
+    0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
+    0xF0, 0x10, 0xF0, 0x10, 0xF0, // 3
+    0x90, 0x90, 0xF0, 0x10, 0x10, // 4
+    0xF0, 0x80, 0xF0, 0x10, 0xF0, // 5
+    0xF0, 0x80, 0xF0, 0x90, 0xF0, // 6
+    0xF0, 0x10, 0x20, 0x40, 0x40, // 7
+    0xF0, 0x90, 0xF0, 0x90, 0xF0, // 8
+    0xF0, 0x90, 0xF0, 0x10, 0xF0, // 9
+    0xF0, 0x90, 0xF0, 0x90, 0x90, // A
+    0xE0, 0x90, 0xE0, 0x90, 0xE0, // B
+    0xF0, 0x80, 0x80, 0x80, 0xF0, // C
+    0xE0, 0x90, 0x90, 0x90, 0xE0, // D
+    0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
+    0xF0, 0x80, 0xF0, 0x80, 0x80  // F
+};
+
 export class Memory {
 public:
-  Memory() = default;
+  Memory() { load_font(); }
+
+  uint8_t &operator[](uint16_t index);
+
+  uint8_t operator[](uint16_t index) const;
+
+  // Load font at very beginning of reserved RAM
+  void load_font(void);
 
   void load_rom(std::fstream &rom);
 
 private:
   std::array<uint8_t, RAM_Size> memory{};
 };
+
+uint8_t Memory::operator[](uint16_t index) const {
+  if (index < 0 || index >= RAM_Size) {
+    throw std::out_of_range{"Index is out of range!"};
+  }
+
+  return memory[index];
+}
+
+uint8_t &Memory::operator[](uint16_t index) {
+  if (index < 0 || index >= RAM_Size) {
+    throw std::out_of_range{"Index is out of range!"};
+  }
+
+  return memory[index];
+}
+
+void Memory::load_font(void) {
+  for (auto i = 0; i < Font_Size; i++) {
+    memory[i] = Font_Data[i];
+  }
+}
 
 void Memory::load_rom(std::fstream &rom) {
   char byte{};
