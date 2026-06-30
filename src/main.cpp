@@ -1,3 +1,4 @@
+#include <cstdint>
 #include <fstream>
 #include <iostream>
 import CPU;
@@ -5,7 +6,7 @@ import Memory;
 import Display;
 
 int main() {
-  chip8::Display display{};
+  // chip8::Display display{};
   chip8::CPU cpu{};
   chip8::Memory memory{};
 
@@ -22,5 +23,13 @@ int main() {
     memory.load_rom(rom);
   }
 
+  // Main CHIP-8 program loop
+  while (true) {
+    // Fetch
+    uint16_t opcode{cpu.fetch(memory)};
+
+    // Decode
+    struct chip8::Decoded_Inst di{cpu.decode(opcode)};
+  }
   return 0;
 }
