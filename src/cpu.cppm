@@ -54,24 +54,22 @@ public:
     return instruction;
   }
 
-  struct Decoded_Inst decode(const uint16_t &instruction);
+  struct Decoded_Inst decode(const uint16_t &instruction) {
+    struct Decoded_Inst di;
+    di.opcode = instruction >> 12 & 0xF;
+    di.x = instruction >> 8 & 0xF;
+    di.y = instruction >> 4 & 0xF;
+    di.nibble = instruction & 0xF;
+    di.nnn = instruction & 0xFFF;
+    di.byte = instruction & 0xFF;
+
+    return di;
+  }
 
 private:
   // First 512 bytes historically reserved for fonts and CHIP-8 architecture
   uint16_t pc{0x0200};
   uint16_t index_reg{0x0000};
 };
-
-struct Decoded_Inst CPU::decode(const uint16_t &instruction) {
-  struct Decoded_Inst di;
-  di.opcode = instruction >> 12 & 0xF;
-  di.x = instruction >> 8 & 0xF;
-  di.y = instruction >> 4 & 0xF;
-  di.nibble = instruction & 0xF;
-  di.nnn = instruction & 0xFFF;
-  di.byte = instruction & 0xFF;
-
-  return di;
-}
 
 } // namespace chip8
