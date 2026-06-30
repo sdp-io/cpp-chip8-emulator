@@ -39,9 +39,21 @@ export class Memory {
 public:
   Memory() { load_font(); }
 
-  uint8_t &operator[](int index);
+  uint8_t operator[](int index) const {
+    if (index < 0 || index >= RAM_Size) {
+      throw std::out_of_range{"Index is out of range!"};
+    }
 
-  uint8_t operator[](int index) const;
+    return memory[index];
+  }
+
+  uint8_t operator[](int index) {
+    if (index < 0 || index >= RAM_Size) {
+      throw std::out_of_range{"Index is out of range!"};
+    }
+
+    return memory[index];
+  }
 
   // Load font at very beginning of reserved RAM
   void load_font(void);
@@ -51,22 +63,6 @@ public:
 private:
   std::array<uint8_t, RAM_Size> memory{};
 };
-
-uint8_t Memory::operator[](int index) const {
-  if (index < 0 || index >= RAM_Size) {
-    throw std::out_of_range{"Index is out of range!"};
-  }
-
-  return memory[index];
-}
-
-uint8_t &Memory::operator[](int index) {
-  if (index < 0 || index >= RAM_Size) {
-    throw std::out_of_range{"Index is out of range!"};
-  }
-
-  return memory[index];
-}
 
 void Memory::load_font(void) {
   for (auto i = 0; i < Font_Size; i++) {
