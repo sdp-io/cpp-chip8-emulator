@@ -6,7 +6,7 @@ import Memory;
 import Display;
 
 int main() {
-  // chip8::Display display{};
+  chip8::Display display{};
   chip8::CPU cpu{};
   chip8::Memory memory{};
 
@@ -30,6 +30,9 @@ int main() {
 
     // Decode
     struct chip8::Decoded_Inst di{cpu.decode(opcode)};
+
+    // Execute
+    cpu.execute(di, memory, display);
   }
   return 0;
 }

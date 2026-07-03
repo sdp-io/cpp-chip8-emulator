@@ -39,6 +39,11 @@ public:
    */
   int init_display();
 
+  int clear_display();
+
+  // TEST: Render a single point to window for testing purposes
+  int draw_dot();
+
 private:
   std::unique_ptr<SDL_Window, WindowDestroy> window{};
   std::unique_ptr<SDL_Renderer, RendererDestroy> renderer{};
@@ -61,20 +66,37 @@ int Display::init_display() {
     return 3;
   }
 
-  SDL_SetRenderDrawColor(raw_renderer, 0, 0, 0, 255);
-  SDL_RenderClear(raw_renderer);
-
-  SDL_SetRenderDrawColor(raw_renderer, 255, 255, 255, 255);
-
-  // TEST: Render a single point to window for testing purposes
-  SDL_RenderPoint(raw_renderer, 64 / 2.0, 32 / 2.0);
-
-  SDL_RenderPresent(raw_renderer);
-  SDL_Delay(10000);
-
   window.reset(raw_window);
   renderer.reset(raw_renderer);
 
+  clear_display();
+
   return 0;
 }
+
+int Display::clear_display() {
+  // TODO: Actually handle SDL errors
+
+  // Set renderer to color black
+  SDL_SetRenderDrawColor(renderer.get(), 0, 0, 0, 255);
+  SDL_RenderClear(renderer.get());
+
+  if (!SDL_RenderPresent(renderer.get())) {
+    SDL_LogError(SDL_LOG_CATEGORY_RENDER, "Failed to present render: %s",
+                 SDL_GetError());
+    return 3;
+  }
+
+  return 0;
+}
+
+// TEST: Render a single point to window for testing purposes
+int Display::draw_dot() {
+  SDL_SetRenderDrawColor(renderer.get(), 255, 255, 255, 255);
+  SDL_RenderPoint(renderer.get(), 32 / 2.0, 16 / 2.0);
+  SDL_RenderPresent(renderer.get());
+
+  return 0;
+}
+
 } // namespace chip8

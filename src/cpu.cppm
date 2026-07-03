@@ -1,9 +1,11 @@
 module;
 
 #include <cstdint>
+#include <iostream>
 
 export module CPU;
 import Memory;
+import Display;
 
 namespace chip8 {
 
@@ -14,11 +16,15 @@ namespace chip8 {
  * flexibly support all CHIP-8 instructions.
  */
 export struct Decoded_Inst {
-  /// The upper 4 bits of the high byte of the instruction. contains the opcode.
-  uint8_t opcode : 4;
+  /// All 16 bits (the opcode.)
+  uint16_t opcode;
 
-  /// The lower 4 bits of the high byte of the instruction. Used to look up one
-  /// of the 16 registers.
+  /// The upper 4 bits of the high byte of the instruction. Contains the
+  /// instruction type.
+  uint8_t inst : 4;
+
+  /// The lower 4 bits of the high byte of the instruction. Used to look up
+  /// one of the 16 registers.
   uint8_t x : 4;
 
   /// The upper 4 bits of the low byte of the instruction. Also used to look up
@@ -56,7 +62,8 @@ public:
 
   struct Decoded_Inst decode(const uint16_t &instruction) {
     struct Decoded_Inst di;
-    di.opcode = instruction >> 12 & 0xF;
+    di.opcode = instruction;
+    di.inst = instruction >> 12 & 0xF;
     di.x = instruction >> 8 & 0xF;
     di.y = instruction >> 4 & 0xF;
     di.nibble = instruction & 0xF;
@@ -66,10 +73,22 @@ public:
     return di;
   }
 
+  void execute(struct Decoded_Inst &di, Memory &memory, Display &display);
+
 private:
   // First 512 bytes historically reserved for fonts and CHIP-8 architecture
   uint16_t pc{0x0200};
   uint16_t index_reg{0x0000};
 };
+
+void CPU::execute(struct Decoded_Inst &di, Memory &memory, Display &display) {
+  switch (di.opcode) {
+  case 0x00E0:
+    display.clear_display();
+    break;
+  default:
+    std::cout << "Unknown instruction!\n";
+  }
+}
 
 } // namespace chip8
