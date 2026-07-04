@@ -16,12 +16,12 @@ namespace chip8 {
  * flexibly support all CHIP-8 instructions.
  */
 export struct Decoded_Inst {
-  /// All 16 bits (the opcode.)
-  uint16_t opcode;
+  /// All 16 bits (the instruction.)
+  uint16_t inst;
 
   /// The upper 4 bits of the high byte of the instruction. Contains the
-  /// instruction type.
-  uint8_t inst : 4;
+  /// opcode.
+  uint8_t opcode : 4;
 
   /// The lower 4 bits of the high byte of the instruction. Used to look up
   /// one of the 16 registers.
@@ -62,8 +62,8 @@ public:
 
   struct Decoded_Inst decode(const uint16_t &instruction) {
     struct Decoded_Inst di;
-    di.opcode = instruction;
-    di.inst = instruction >> 12 & 0xF;
+    di.inst = instruction;
+    di.opcode = instruction >> 12 & 0xF;
     di.x = instruction >> 8 & 0xF;
     di.y = instruction >> 4 & 0xF;
     di.nibble = instruction & 0xF;
@@ -79,12 +79,19 @@ private:
   // First 512 bytes historically reserved for fonts and CHIP-8 architecture
   uint16_t pc{0x0200};
   uint16_t index_reg{0x0000};
+
+  void jump(const unsigned int location) { pc = location; }
 };
 
 void CPU::execute(struct Decoded_Inst &di, Memory &memory, Display &display) {
   switch (di.opcode) {
-  case 0x00E0:
+  case 0x0:
+    std::cout << "Clearing!\n";
     display.clear_display();
+    break;
+  case 0x1:
+    std::cout << "Jumping!\n";
+    CPU::jump(di.nnn);
     break;
   default:
     std::cout << "Unknown instruction!\n";

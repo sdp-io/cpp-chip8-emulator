@@ -26,10 +26,10 @@ int main() {
   // Main CHIP-8 program loop
   while (true) {
     // Fetch
-    uint16_t opcode{cpu.fetch(memory)};
+    uint16_t instruction{cpu.fetch(memory)};
 
     // Decode
-    struct chip8::Decoded_Inst di{cpu.decode(opcode)};
+    struct chip8::Decoded_Inst di{cpu.decode(instruction)};
 
     // Execute
     cpu.execute(di, memory, display);
