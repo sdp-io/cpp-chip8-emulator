@@ -9,6 +9,8 @@ import Display;
 
 namespace chip8 {
 
+constexpr size_t Register_Size{16};
+
 /**
  * @brief Struct containing fields for a decoded uint16_t CHIP-8 instruction.
  *
@@ -79,6 +81,7 @@ private:
   // First 512 bytes historically reserved for fonts and CHIP-8 architecture
   uint16_t pc{0x0200};
   uint16_t index_reg{0x0000};
+  std::array<uint8_t, Register_Size> registers{};
 
   void jump(const unsigned int location) { pc = location; }
 };
@@ -86,12 +89,16 @@ private:
 void CPU::execute(struct Decoded_Inst &di, Memory &memory, Display &display) {
   switch (di.opcode) {
   case 0x0:
-    std::cout << "Clearing!\n";
     display.clear_display();
     break;
   case 0x1:
-    std::cout << "Jumping!\n";
     CPU::jump(di.nnn);
+    break;
+  case 0x6:
+    registers[di.x] = di.byte;
+    break;
+  case 0x7:
+    registers[di.x] += di.byte;
     break;
   default:
     std::cout << "Unknown instruction!\n";
