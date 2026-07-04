@@ -100,6 +100,9 @@ void CPU::execute(struct Decoded_Inst &di, Memory &memory, Display &display) {
   case 0x7:
     registers[di.x] += di.byte;
     break;
+  case 0xA:
+    index_reg = di.nnn;
+    break;
   default:
     std::cout << "Unknown instruction!\n";
   }
