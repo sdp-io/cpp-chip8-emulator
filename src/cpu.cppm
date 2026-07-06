@@ -94,6 +94,9 @@ private:
 };
 
 void CPU::execute(struct Decoded_Inst &di, Memory &memory, Display &display) {
+  uint8_t val_x{};
+  uint8_t val_y{};
+
   switch (di.opcode) {
   case 0x00E0:
     display.clear_display();
@@ -109,11 +112,37 @@ void CPU::execute(struct Decoded_Inst &di, Memory &memory, Display &display) {
     stack_reg.push_back(pc);
     CPU::jump(di.nnn);
     break;
+  case 0x3:
+    val_x = registers[di.x];
+    if (val_x == di.byte) {
+      pc += 2;
+    }
+    break;
+  case 0x4:
+    val_x = registers[di.x];
+    if (val_x != di.byte) {
+      pc += 2;
+    }
+    break;
+  case 0x5:
+    val_x = registers[di.x];
+    val_y = registers[di.y];
+    if (val_x == val_y) {
+      pc += 2;
+    }
+    break;
   case 0x6:
     registers[di.x] = di.byte;
     break;
   case 0x7:
     registers[di.x] += di.byte;
+    break;
+  case 0x9:
+    val_x = registers[di.x];
+    val_y = registers[di.y];
+    if (val_x != val_y) {
+      pc += 2;
+    }
     break;
   case 0xA:
     index_reg = di.nnn;
