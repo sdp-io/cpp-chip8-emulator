@@ -2,6 +2,7 @@ module;
 
 #include <cstdint>
 #include <iostream>
+#include <vector>
 
 export module CPU;
 import Memory;
@@ -83,6 +84,7 @@ private:
   // First 512 bytes historically reserved for fonts and CHIP-8 architecture
   uint16_t pc{0x0200};
   uint16_t index_reg{0x0000};
+  std::vector<uint16_t> stack_reg{};
   std::array<uint8_t, Register_Size> registers{};
   uint8_t &flag_reg{registers[Register_Size - 1]};
 
@@ -93,10 +95,18 @@ private:
 
 void CPU::execute(struct Decoded_Inst &di, Memory &memory, Display &display) {
   switch (di.opcode) {
-  case 0x0:
+  case 0x00E0:
     display.clear_display();
     break;
+  case 0x00EE:
+    pc = stack_reg.back();
+    stack_reg.pop_back();
+    break;
   case 0x1:
+    CPU::jump(di.nnn);
+    break;
+  case 0x2:
+    stack_reg.push_back(pc);
     CPU::jump(di.nnn);
     break;
   case 0x6:
