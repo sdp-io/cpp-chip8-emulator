@@ -9,9 +9,9 @@ export module CPU;
 import Memory;
 import Display;
 
-int random_int(int min, int max);
-
 namespace chip8 {
+
+int random_int(const int &min, const int &max);
 
 constexpr size_t Register_Size{16};
 
