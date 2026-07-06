@@ -2,11 +2,14 @@ module;
 
 #include <cstdint>
 #include <iostream>
+#include <random>
 #include <vector>
 
 export module CPU;
 import Memory;
 import Display;
+
+int random_int(int min, int max);
 
 namespace chip8 {
 
@@ -97,6 +100,8 @@ void CPU::execute(struct Decoded_Inst &di, Memory &memory, Display &display) {
   uint8_t val_x{registers[di.x]};
   uint8_t val_y{registers[di.y]};
   uint8_t bitmask{};
+
+  int random_num{random_int(0, 16)};
 
   switch (di.opcode) {
   case 0x00E0:
@@ -189,6 +194,9 @@ void CPU::execute(struct Decoded_Inst &di, Memory &memory, Display &display) {
     // TODO: Add support CHIP-48 and SUPER-CHIP instruction variations
     jump(di.nnn + registers[0]);
     break;
+  case 0xC:
+    registers[di.x] = di.byte & random_num;
+    break;
   case 0xD:
     execute_DXYN(di, memory, display);
     break;
@@ -214,6 +222,16 @@ void CPU::execute_DXYN(struct Decoded_Inst &di, Memory &memory,
       flag_reg = 1;
     }
   }
+}
+
+int random_int(const int &min, const int &max) {
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_int_distribution<> distrib(min, max);
+
+  int random_num{distrib(gen)};
+
+  return random_num;
 }
 
 } // namespace chip8
