@@ -185,6 +185,10 @@ void CPU::execute(struct Decoded_Inst &di, Memory &memory, Display &display) {
   case 0xA:
     index_reg = di.nnn;
     break;
+  case 0xB:
+    // TODO: Add support CHIP-48 and SUPER-CHIP instruction variations
+    jump(di.nnn + registers[0]);
+    break;
   case 0xD:
     execute_DXYN(di, memory, display);
     break;
