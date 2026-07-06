@@ -10,10 +10,7 @@ export module Memory;
 
 namespace chip8 {
 
-// 4KB of RAM as per CHIP-8 specifications
-constexpr size_t RAM_Size{4096};
-
-constexpr auto Font_Size{80};
+constexpr size_t Font_Size{80};
 
 // Font data required for instruction 'FX29'
 constexpr std::array<uint8_t, Font_Size> Font_Data{
@@ -60,7 +57,10 @@ public:
 
   void load_rom(std::fstream &rom);
 
+  uint8_t get_sprite_data(const uint16_t &index) { return memory[index]; }
+
 private:
+  static constexpr size_t RAM_Size{4096}; // 4KB
   std::array<uint8_t, RAM_Size> memory{};
 };
 

@@ -77,13 +77,18 @@ public:
 
   void execute(struct Decoded_Inst &di, Memory &memory, Display &display);
 
+  uint8_t get_register(const size_t address) { return registers[address]; }
+
 private:
   // First 512 bytes historically reserved for fonts and CHIP-8 architecture
   uint16_t pc{0x0200};
   uint16_t index_reg{0x0000};
   std::array<uint8_t, Register_Size> registers{};
+  uint8_t &flag_reg{registers[Register_Size - 1]};
 
   void jump(const unsigned int location) { pc = location; }
+
+  void execute_DXYN(struct Decoded_Inst &di, Memory &memory, Display &display);
 };
 
 void CPU::execute(struct Decoded_Inst &di, Memory &memory, Display &display) {
@@ -103,8 +108,30 @@ void CPU::execute(struct Decoded_Inst &di, Memory &memory, Display &display) {
   case 0xA:
     index_reg = di.nnn;
     break;
+  case 0xD:
+    execute_DXYN(di, memory, display);
+    break;
   default:
     std::cout << "Unknown instruction!\n";
+  }
+}
+
+void CPU::execute_DXYN(struct Decoded_Inst &di, Memory &memory,
+                       Display &display) {
+  // Bitwise AND to wraparound any out-of-bounds coordinates
+  int x_coord{registers[di.x] & 63};
+  int y_coord{registers[di.y] & 31};
+  uint8_t sprite_height{di.nibble}; // Get N lines of sprite data
+
+  flag_reg = 0;
+  for (uint8_t i{0}; i < sprite_height; i++) {
+    uint8_t sprite_data{memory.get_sprite_data(index_reg + i)};
+    uint8_t has_collision{display.draw_line(sprite_data, x_coord, y_coord)};
+
+    y_coord++;
+    if (has_collision) {
+      flag_reg = 1;
+    }
   }
 }
 
