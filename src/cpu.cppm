@@ -94,8 +94,9 @@ private:
 };
 
 void CPU::execute(struct Decoded_Inst &di, Memory &memory, Display &display) {
-  uint8_t val_x{};
-  uint8_t val_y{};
+  uint8_t val_x{registers[di.x]};
+  uint8_t val_y{registers[di.y]};
+  uint8_t bitmask{};
 
   switch (di.opcode) {
   case 0x00E0:
@@ -113,20 +114,16 @@ void CPU::execute(struct Decoded_Inst &di, Memory &memory, Display &display) {
     CPU::jump(di.nnn);
     break;
   case 0x3:
-    val_x = registers[di.x];
     if (val_x == di.byte) {
       pc += 2;
     }
     break;
   case 0x4:
-    val_x = registers[di.x];
     if (val_x != di.byte) {
       pc += 2;
     }
     break;
   case 0x5:
-    val_x = registers[di.x];
-    val_y = registers[di.y];
     if (val_x == val_y) {
       pc += 2;
     }
@@ -137,9 +134,50 @@ void CPU::execute(struct Decoded_Inst &di, Memory &memory, Display &display) {
   case 0x7:
     registers[di.x] += di.byte;
     break;
+  case 0x8:
+    // Switches for logical and arithmetic instructions
+    switch (di.byte) {
+    case 0x0:
+      registers[di.x] = registers[di.y];
+      break;
+    case 0x1:
+      registers[di.x] = val_x | val_y;
+      break;
+    case 0x2:
+      registers[di.x] = val_x & val_y;
+      break;
+    case 0x3:
+      registers[di.x] = val_x ^ val_y;
+      break;
+    case 0x4:
+      registers[di.x] = val_x + val_y;
+      break;
+    case 0x5:
+      registers[di.x] = val_x - val_y;
+      break;
+    case 0x6:
+      // TODO: Add support CHIP-48 and SUPER-CHIP instruction variations
+      if ((val_x & 1) == 1) {
+        flag_reg = 1;
+      } else {
+        flag_reg = 0;
+      }
+      registers[di.x] >>= 1;
+      break;
+    case 0x7:
+      registers[di.x] = val_y - val_x;
+      break;
+    case 0xE:
+      // TODO: Add support CHIP-48 and SUPER-CHIP instruction variations
+      if ((val_x & 1) == 1) {
+        flag_reg = 1;
+      } else {
+        flag_reg = 0;
+      }
+      registers[di.x] <<= 1;
+      break;
+    }
   case 0x9:
-    val_x = registers[di.x];
-    val_y = registers[di.y];
     if (val_x != val_y) {
       pc += 2;
     }
