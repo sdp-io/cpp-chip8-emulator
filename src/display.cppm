@@ -49,6 +49,13 @@ public:
 
   int clear_display();
 
+  /**
+   * @brief Polls for SDL_Events and handles them accordingly.
+   *
+   * @return True if SDL_EVENT_QUIT is not triggered, else false.
+   */
+  bool poll_events();
+
   bool draw_line(const uint8_t &sprite_data, int x_coord, int y_coord);
 
   void convert_pixels_rgba8888();
@@ -95,6 +102,17 @@ int Display::init_display() {
   clear_display();
 
   return 0;
+}
+
+bool Display::poll_events() {
+  SDL_Event event{};
+  while (SDL_PollEvent(&event)) {
+    if (event.type == SDL_EVENT_QUIT) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 bool Display::draw_line(const uint8_t &sprite_data, int x_coord, int y_coord) {
