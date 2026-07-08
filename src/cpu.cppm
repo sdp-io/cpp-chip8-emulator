@@ -241,6 +241,10 @@ void CPU::execute(struct Decoded_Inst &di, Memory &memory, Display &display) {
       // TODO: Set VF flag on overflow
       index_reg += val_x;
       break;
+    case 0x29:
+      // Index for each font row is 0-F * 5
+      index_reg = val_x * 5;
+      break;
     }
     break; // Parent case
   default:
