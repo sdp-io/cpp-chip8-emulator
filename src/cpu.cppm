@@ -242,9 +242,12 @@ void CPU::execute(struct Decoded_Inst &di, Memory &memory, Display &display) {
       index_reg += val_x;
       break;
     case 0x29:
-      // Index for each font row is 0-F * 5
-      index_reg = val_x * 5;
+      index_reg = val_x * 5; // Index for each font row is 0-F * 5
       break;
+    case 0x33:
+      memory[index_reg] = val_x / 100;
+      memory[index_reg] = (val_x / 10) % 10;
+      memory[index_reg] = val_x % 10;
     }
     break; // Parent case
   default:

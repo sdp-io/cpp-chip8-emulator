@@ -44,7 +44,7 @@ public:
     return memory[index];
   }
 
-  uint8_t operator[](int index) {
+  uint8_t &operator[](int index) {
     if (index < 0 || index >= RAM_Size) {
       throw std::out_of_range{"Index is out of range!"};
     }
