@@ -248,6 +248,17 @@ void CPU::execute(struct Decoded_Inst &di, Memory &memory, Display &display) {
       memory[index_reg] = val_x / 100;
       memory[index_reg] = (val_x / 10) % 10;
       memory[index_reg] = val_x % 10;
+      break;
+    case 0x55:
+      for (int i{0}; i <= val_x; i++) {
+        memory[index_reg + i] = registers[i];
+      }
+      break;
+    case 0x65:
+      for (int i{0}; i <= val_x; i++) {
+        registers[i] = memory[index_reg + i];
+      }
+      break;
     }
     break; // Parent case
   default:
