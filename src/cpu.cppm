@@ -1,6 +1,5 @@
 module;
 
-#include <algorithm>
 #include <cstdint>
 #include <iostream>
 #include <random>
@@ -91,6 +90,8 @@ private:
   // First 512 bytes historically reserved for fonts and CHIP-8 architecture
   uint16_t pc{0x0200};
   uint16_t index_reg{0x0000};
+  uint8_t delay_timer{0};
+  uint8_t sound_timer{0};
   std::vector<uint16_t> stack_reg{};
   std::array<uint8_t, Register_Size> registers{};
   uint8_t &flag_reg{registers[Register_Size - 1]};
@@ -186,6 +187,7 @@ void CPU::execute(struct Decoded_Inst &di, Memory &memory, Display &display) {
       registers[di.x] <<= 1;
       break;
     }
+    break; // Parent case
   case 0x9:
     if (val_x != val_y) {
       pc += 2;
@@ -217,6 +219,20 @@ void CPU::execute(struct Decoded_Inst &di, Memory &memory, Display &display) {
       }
       break;
     }
+    break; // Parent case
+  case 0xF:
+    switch (di.byte) {
+    case 0x07:
+      registers[di.x] = delay_timer;
+      break;
+    case 0x15:
+      delay_timer = val_x;
+      break;
+    case 0x18:
+      sound_timer = val_x;
+      break;
+    }
+    break; // Parent case
   default:
     std::cout << "Unknown instruction!\n";
   }
