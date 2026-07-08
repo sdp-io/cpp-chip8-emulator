@@ -300,6 +300,10 @@ int Display::clear_display() {
     return 3;
   }
 
+  for (uint8_t &pixel : pixels) {
+    pixel = 0;
+  }
+
   return 0;
 }
 
