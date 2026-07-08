@@ -1,20 +1,26 @@
 module;
 
 #include "SDL3/SDL_error.h"
+#include "SDL3/SDL_events.h"
 #include "SDL3/SDL_init.h"
 #include "SDL3/SDL_log.h"
 #include "SDL3/SDL_pixels.h"
 #include "SDL3/SDL_render.h"
+#include "SDL3/SDL_scancode.h"
 #include "SDL3/SDL_video.h"
 #include <SDL3/SDL.h>
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <format>
+#include <iostream>
 #include <memory>
 
 export module Display;
 
 namespace chip8 {
+
+export constexpr size_t Keypad_Size{16};
 
 struct WindowDestroy {
   void operator()(SDL_Window *window) const { SDL_DestroyWindow(window); }
@@ -54,7 +60,7 @@ public:
    *
    * @return True if SDL_EVENT_QUIT is not triggered, else false.
    */
-  bool poll_events();
+  bool poll_events(std::array<bool, 16> key_pad);
 
   bool draw_line(const uint8_t &sprite_data, int x_coord, int y_coord);
 
@@ -104,11 +110,134 @@ int Display::init_display() {
   return 0;
 }
 
-bool Display::poll_events() {
+bool Display::poll_events(std::array<bool, Keypad_Size> key_pad) {
   SDL_Event event{};
   while (SDL_PollEvent(&event)) {
     if (event.type == SDL_EVENT_QUIT) {
       return false;
+    }
+
+    if (event.type == SDL_EVENT_KEY_DOWN) {
+      std::cout << std::format("{}", event.key.key) << " pressed!\n";
+      switch (event.key.scancode) {
+      case SDL_SCANCODE_1:
+        key_pad[0x0] = true;
+        break;
+      case SDL_SCANCODE_2:
+        key_pad[0x1] = true;
+        break;
+      case SDL_SCANCODE_3:
+        key_pad[0x2] = true;
+        break;
+      case SDL_SCANCODE_4:
+        key_pad[0x3] = true;
+        break;
+
+      case SDL_SCANCODE_Q:
+        key_pad[0x4] = true;
+        break;
+      case SDL_SCANCODE_W:
+        key_pad[0x5] = true;
+        break;
+      case SDL_SCANCODE_E:
+        key_pad[0x6] = true;
+        break;
+      case SDL_SCANCODE_R:
+        key_pad[0x7] = true;
+        break;
+
+      case SDL_SCANCODE_A:
+        key_pad[0x8] = true;
+        break;
+      case SDL_SCANCODE_S:
+        key_pad[0x9] = true;
+        break;
+      case SDL_SCANCODE_D:
+        key_pad[0xA] = true;
+        break;
+      case SDL_SCANCODE_F:
+        key_pad[0xB] = true;
+        break;
+
+      case SDL_SCANCODE_Z:
+        key_pad[0xC] = true;
+        break;
+      case SDL_SCANCODE_X:
+        key_pad[0xD] = true;
+        break;
+      case SDL_SCANCODE_C:
+        key_pad[0xE] = true;
+        break;
+      case SDL_SCANCODE_V:
+        key_pad[0xF] = true;
+        break;
+
+      default:
+        // TODO: Remove
+        std::cout << "Invalid key!\n";
+        break;
+      }
+    }
+
+    if (event.type == SDL_EVENT_KEY_UP) {
+      switch (event.key.scancode) {
+      case SDL_SCANCODE_1:
+        key_pad[0x0] = false;
+        break;
+      case SDL_SCANCODE_2:
+        key_pad[0x1] = false;
+        break;
+      case SDL_SCANCODE_3:
+        key_pad[0x2] = false;
+        break;
+      case SDL_SCANCODE_4:
+        key_pad[0x3] = false;
+        break;
+
+      case SDL_SCANCODE_Q:
+        key_pad[0x4] = false;
+        break;
+      case SDL_SCANCODE_W:
+        key_pad[0x5] = false;
+        break;
+      case SDL_SCANCODE_E:
+        key_pad[0x6] = false;
+        break;
+      case SDL_SCANCODE_R:
+        key_pad[0x7] = false;
+        break;
+
+      case SDL_SCANCODE_A:
+        key_pad[0x8] = false;
+        break;
+      case SDL_SCANCODE_S:
+        key_pad[0x9] = false;
+        break;
+      case SDL_SCANCODE_D:
+        key_pad[0xA] = false;
+        break;
+      case SDL_SCANCODE_F:
+        key_pad[0xB] = false;
+        break;
+
+      case SDL_SCANCODE_Z:
+        key_pad[0xC] = false;
+        break;
+      case SDL_SCANCODE_X:
+        key_pad[0xD] = false;
+        break;
+      case SDL_SCANCODE_C:
+        key_pad[0xE] = false;
+        break;
+      case SDL_SCANCODE_V:
+        key_pad[0xF] = false;
+        break;
+
+      default:
+        // TODO: Remove
+        std::cout << "Invalid key!\n";
+        break;
+      }
     }
   }
 

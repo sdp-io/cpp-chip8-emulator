@@ -1,5 +1,6 @@
 module;
 
+#include <algorithm>
 #include <cstdint>
 #include <iostream>
 #include <random>
@@ -49,6 +50,9 @@ export struct Decoded_Inst {
 
 export class CPU {
 public:
+  // Represents actuation status for keys 0-F. True if actuated, else false.
+  std::array<bool, Keypad_Size> keypad{};
+
   CPU() = default;
 
   uint16_t fetch(const chip8::Memory &memory) {
@@ -141,7 +145,7 @@ void CPU::execute(struct Decoded_Inst &di, Memory &memory, Display &display) {
     break;
   case 0x8:
     // Switches for logical and arithmetic instructions
-    switch (di.byte) {
+    switch (di.nibble) {
     case 0x0:
       registers[di.x] = registers[di.y];
       break;
@@ -200,6 +204,19 @@ void CPU::execute(struct Decoded_Inst &di, Memory &memory, Display &display) {
   case 0xD:
     execute_DXYN(di, memory, display);
     break;
+  case 0xE:
+    switch (di.nibble) {
+    case 0x1:
+      if (keypad[val_x]) {
+        pc += 2;
+      }
+      break;
+    case 0xE:
+      if (!keypad[val_x]) {
+        pc += 2;
+      }
+      break;
+    }
   default:
     std::cout << "Unknown instruction!\n";
   }

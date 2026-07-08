@@ -24,7 +24,7 @@ int main() {
   }
 
   // Main CHIP-8 program loop
-  while (display.poll_events()) {
+  while (display.poll_events(cpu.keypad)) {
     // Fetch
     uint16_t instruction{cpu.fetch(memory)};
 
