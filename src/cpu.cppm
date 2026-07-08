@@ -231,6 +231,10 @@ void CPU::execute(struct Decoded_Inst &di, Memory &memory, Display &display) {
     case 0x18:
       sound_timer = val_x;
       break;
+    case 0x1E:
+      // TODO: Set VF flag on overflow
+      index_reg += val_x;
+      break;
     }
     break; // Parent case
   default:
