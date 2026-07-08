@@ -1,5 +1,6 @@
 module;
 
+#include <algorithm>
 #include <cstdint>
 #include <iostream>
 #include <random>
@@ -224,6 +225,11 @@ void CPU::execute(struct Decoded_Inst &di, Memory &memory, Display &display) {
     switch (di.byte) {
     case 0x07:
       registers[di.x] = delay_timer;
+      break;
+    case 0x0A:
+      if (std::ranges::none_of(keypad, std::identity{})) {
+        pc -= 2; // No keys pressed, reset PC from previous step
+      }
       break;
     case 0x15:
       delay_timer = val_x;
