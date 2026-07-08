@@ -11,7 +11,7 @@ int main() {
   chip8::Memory memory{};
 
   std::cout << "Hello world!\n";
-  std::string rom_path{"../data/roms/IBMLogo.ch8"};
+  std::string rom_path{"../data/roms/3-corax+.ch8"};
 
   std::fstream rom{rom_path, rom.binary | rom.in};
 
