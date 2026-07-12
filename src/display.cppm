@@ -7,6 +7,7 @@ module;
 #include "SDL3/SDL_pixels.h"
 #include "SDL3/SDL_render.h"
 #include "SDL3/SDL_scancode.h"
+#include "SDL3/SDL_surface.h"
 #include "SDL3/SDL_video.h"
 #include <SDL3/SDL.h>
 #include <array>
@@ -72,6 +73,8 @@ public:
 private:
   static constexpr size_t Height{32};
   static constexpr size_t Width{64};
+  static constexpr size_t Scaled_Height{320};
+  static constexpr size_t Scaled_Width{640};
   std::unique_ptr<SDL_Window, WindowDestroy> window{};
   std::unique_ptr<SDL_Renderer, RendererDestroy> renderer{};
   std::unique_ptr<SDL_Texture, TextureDestroy> texture{};
@@ -90,16 +93,21 @@ int Display::init_display() {
     return 3;
   }
 
-  if (!SDL_CreateWindowAndRenderer("CHIP-8", Width, Height,
+  if (!SDL_CreateWindowAndRenderer("CHIP-8", Scaled_Width, Scaled_Height,
                                    SDL_WINDOW_RESIZABLE, &raw_window,
                                    &raw_renderer)) {
     SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't initialize SDL: %s",
                  SDL_GetError());
     return 3;
+  } else {
+    SDL_SetRenderLogicalPresentation(raw_renderer, Width, Height,
+                                     SDL_LOGICAL_PRESENTATION_INTEGER_SCALE);
   }
 
   raw_texture = SDL_CreateTexture(raw_renderer, SDL_PIXELFORMAT_RGBA8888,
                                   SDL_TEXTUREACCESS_STREAMING, Width, Height);
+
+  SDL_SetTextureScaleMode(raw_texture, SDL_SCALEMODE_PIXELART);
 
   window.reset(raw_window);
   renderer.reset(raw_renderer);
@@ -115,6 +123,12 @@ bool Display::poll_events(std::array<bool, Keypad_Size> key_pad) {
   while (SDL_PollEvent(&event)) {
     if (event.type == SDL_EVENT_QUIT) {
       return false;
+    }
+
+    if (event.type == SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED) {
+      // Render pixels to new dimensions and present it
+      SDL_RenderTexture(renderer.get(), texture.get(), nullptr, nullptr);
+      SDL_RenderPresent(renderer.get());
     }
 
     if (event.type == SDL_EVENT_KEY_DOWN) {
