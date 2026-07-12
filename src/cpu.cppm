@@ -250,9 +250,9 @@ void CPU::execute(struct Decoded_Inst &di, Memory &memory, Display &display) {
       index_reg = val_x * 5; // Index for each font row is 0-F * 5
       break;
     case 0x33:
-      memory[index_reg] = val_x / 100;
-      memory[index_reg] = (val_x / 10) % 10;
-      memory[index_reg] = val_x % 10;
+      memory[index_reg + 0] = val_x / 100;
+      memory[index_reg + 1] = (val_x / 10) % 10;
+      memory[index_reg + 2] = val_x % 10;
       break;
     case 0x55:
       for (int i{0}; i <= di.x; i++) {
