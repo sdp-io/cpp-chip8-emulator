@@ -111,13 +111,17 @@ void CPU::execute(struct Decoded_Inst &di, Memory &memory, Display &display) {
   int random_num{random_int(0, 16)};
 
   switch (di.opcode) {
-  case 0x00E0:
-    display.clear_display();
-    break;
-  case 0x00EE:
-    pc = stack_reg.back();
-    stack_reg.pop_back();
-    break;
+  case 0x0:
+    switch (di.nibble) {
+    case 0x0:
+      display.clear_display();
+      break;
+    case 0xE:
+      pc = stack_reg.back();
+      stack_reg.pop_back();
+      break;
+    }
+    break; // Parent case
   case 0x1:
     CPU::jump(di.nnn);
     break;
