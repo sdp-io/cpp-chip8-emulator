@@ -84,6 +84,16 @@ public:
     return di;
   }
 
+  void decrement_timers() {
+    if (delay_timer > 0) {
+      delay_timer--;
+    }
+
+    if (sound_timer > 0) {
+      sound_timer--;
+    }
+  }
+
   void execute(struct Decoded_Inst &di, Memory &memory, Display &display);
 
   uint8_t get_register(const size_t address) { return registers[address]; }
@@ -167,30 +177,45 @@ void CPU::execute(struct Decoded_Inst &di, Memory &memory, Display &display) {
       break;
     case 0x4:
       registers[di.x] = val_x + val_y;
+      if ((val_x + val_y) > 255) { // Set VF on overflow
+        flag_reg = 1;
+      } else {
+        flag_reg = 0;
+      }
       break;
     case 0x5:
       registers[di.x] = val_x - val_y;
+      if (val_y > val_x) { // Set VF (carry flag) on underflow
+        flag_reg = 0;
+      } else {
+        flag_reg = 1;
+      }
       break;
     case 0x6:
       // TODO: Add support CHIP-48 and SUPER-CHIP instruction variations
-      if ((val_x & 1) == 1) {
+      registers[di.x] >>= 1;
+      if ((val_x & 1) == 1) { // Set VF if bit carried out was a 1
         flag_reg = 1;
       } else {
         flag_reg = 0;
       }
-      registers[di.x] >>= 1;
       break;
     case 0x7:
       registers[di.x] = val_y - val_x;
+      if (val_x > val_y) { // Set VF (carry flag) on underflow
+        flag_reg = 0;
+      } else {
+        flag_reg = 1;
+      }
       break;
     case 0xE:
       // TODO: Add support CHIP-48 and SUPER-CHIP instruction variations
-      if ((val_x & 1) == 1) {
+      registers[di.x] <<= 1;
+      if ((val_x & 128) == 128) { // Set VF if bit carried out was a 1
         flag_reg = 1;
       } else {
         flag_reg = 0;
       }
-      registers[di.x] <<= 1;
       break;
     }
     break; // Parent case
