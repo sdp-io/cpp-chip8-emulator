@@ -4,6 +4,7 @@ module;
 #include <cstdint>
 #include <format>
 #include <iostream>
+#include <iterator>
 #include <random>
 #include <vector>
 
@@ -240,12 +241,12 @@ void CPU::execute(struct Decoded_Inst &di, Memory &memory, Display &display) {
   case 0xE:
     switch (di.nibble) {
     case 0x1:
-      if (keypad[val_x]) {
+      if (!keypad[val_x]) {
         pc += 2;
       }
       break;
     case 0xE:
-      if (!keypad[val_x]) {
+      if (keypad[val_x]) {
         pc += 2;
       }
       break;
@@ -256,11 +257,17 @@ void CPU::execute(struct Decoded_Inst &di, Memory &memory, Display &display) {
     case 0x07:
       registers[di.x] = delay_timer;
       break;
-    case 0x0A:
-      if (std::ranges::none_of(keypad, std::identity{})) {
+    case 0x0A: {
+      auto keypad_it{std::ranges::find(keypad, true)}; // Find activated key
+      if (keypad_it != keypad.end()) {
+        // Index for activated key equal to key's hex value
+        auto index{std::distance(keypad.begin(), keypad_it)};
+        registers[di.x] = index;
+      } else {
         pc -= 2; // No keys pressed, reset PC from previous step
       }
       break;
+    }
     case 0x15:
       delay_timer = val_x;
       break;

@@ -61,7 +61,7 @@ public:
    *
    * @return True if SDL_EVENT_QUIT is not triggered, else false.
    */
-  bool poll_events(std::array<bool, 16> key_pad);
+  bool poll_events(std::array<bool, 16> &key_pad);
 
   bool draw_line(const uint8_t &sprite_data, int x_coord, int y_coord);
 
@@ -118,7 +118,7 @@ int Display::init_display() {
   return 0;
 }
 
-bool Display::poll_events(std::array<bool, Keypad_Size> key_pad) {
+bool Display::poll_events(std::array<bool, Keypad_Size> &key_pad) {
   SDL_Event event{};
   while (SDL_PollEvent(&event)) {
     if (event.type == SDL_EVENT_QUIT) {
