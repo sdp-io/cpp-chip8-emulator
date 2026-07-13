@@ -275,7 +275,11 @@ bool Display::draw_line(const uint8_t &sprite_data, int x_coord, int y_coord) {
     screen_pixel ^= bit;
     pixels[(y_coord * Width) + x_coord] = screen_pixel;
 
+    // Stop drawing if x coordinate exceeds screen dimensions
     x_coord++;
+    if (x_coord >= 64) {
+      break;
+    }
   }
 
   convert_pixels_rgba8888();

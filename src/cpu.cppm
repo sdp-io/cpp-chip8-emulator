@@ -315,9 +315,14 @@ void CPU::execute_DXYN(struct Decoded_Inst &di, Memory &memory,
     uint8_t sprite_data{memory.get_sprite_data(index_reg + i)};
     uint8_t has_collision{display.draw_line(sprite_data, x_coord, y_coord)};
 
-    y_coord++;
     if (has_collision) {
       flag_reg = 1;
+    }
+
+    // Stop drawing if y coordinate exceeds screen dimensions
+    y_coord++;
+    if (y_coord >= 32) {
+      break;
     }
   }
 }
