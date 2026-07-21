@@ -60,7 +60,7 @@ public:
     uint16_t instruction{memory[pc]};
 
     // Shift first byte of instruction in memory into upper bits
-    instruction = instruction << 8;
+    instruction = static_cast<uint16_t>(instruction << 8);
 
     // Bitwise OR second byte of instruction in memory into lower bits
     instruction = instruction | memory[pc + 1];
@@ -110,7 +110,7 @@ private:
   std::array<uint8_t, Register_Size> registers{};
   uint8_t &flag_reg{registers[Register_Size - 1]};
 
-  void jump(const unsigned int location) { pc = location; }
+  void jump(const uint16_t location) { pc = location; }
 
   void execute_DXYN(struct Decoded_Inst &di, Memory &memory, Display &display);
 };
@@ -118,7 +118,6 @@ private:
 void CPU::execute(struct Decoded_Inst &di, Memory &memory, Display &display) {
   uint8_t val_x{registers[di.x]};
   uint8_t val_y{registers[di.y]};
-  uint8_t bitmask{};
 
   int random_num{random_int(0, 16)};
 
@@ -262,8 +261,9 @@ void CPU::execute(struct Decoded_Inst &di, Memory &memory, Display &display) {
       auto keypad_it{std::ranges::find(keypad, true)}; // Find activated key
       if (keypad_it != keypad.end()) {
         // Index for activated key equal to key's hex value
+        // TODO: Ensure cannot be negative
         auto index{std::distance(keypad.begin(), keypad_it)};
-        registers[di.x] = index;
+        registers[di.x] = static_cast<uint8_t>(index);
       } else {
         pc -= 2; // No keys pressed, reset PC from previous step
       }
@@ -288,12 +288,12 @@ void CPU::execute(struct Decoded_Inst &di, Memory &memory, Display &display) {
       memory[index_reg + 2] = val_x % 10;
       break;
     case 0x55:
-      for (int i{0}; i <= di.x; i++) {
+      for (size_t i{0}; i <= di.x; i++) {
         memory[index_reg + i] = registers[i];
       }
       break;
     case 0x65:
-      for (int i{0}; i <= di.x; i++) {
+      for (size_t i{0}; i <= di.x; i++) {
         registers[i] = memory[index_reg + i];
       }
       break;
@@ -307,8 +307,8 @@ void CPU::execute(struct Decoded_Inst &di, Memory &memory, Display &display) {
 void CPU::execute_DXYN(struct Decoded_Inst &di, Memory &memory,
                        Display &display) {
   // Bitwise AND to wraparound any out-of-bounds coordinates
-  int x_coord{registers[di.x] & 63};
-  int y_coord{registers[di.y] & 31};
+  size_t x_coord{static_cast<size_t>(registers[di.x] & 63)};
+  size_t y_coord{static_cast<size_t>(registers[di.y] & 31)};
   uint8_t sprite_height{di.nibble}; // Get N lines of sprite data
 
   flag_reg = 0;

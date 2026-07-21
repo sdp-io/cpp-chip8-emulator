@@ -63,7 +63,7 @@ public:
    */
   bool poll_events(std::array<bool, 16> &key_pad);
 
-  bool draw_line(const uint8_t &sprite_data, int x_coord, int y_coord);
+  bool draw_line(const uint8_t &sprite_data, size_t x_coord, size_t y_coord);
 
   void convert_pixels_rgba8888();
 
@@ -258,12 +258,14 @@ bool Display::poll_events(std::array<bool, Keypad_Size> &key_pad) {
   return true;
 }
 
-bool Display::draw_line(const uint8_t &sprite_data, int x_coord, int y_coord) {
+bool Display::draw_line(const uint8_t &sprite_data, size_t x_coord,
+                        size_t y_coord) {
   bool has_collision{false};
 
   for (uint8_t i{0}; i < 8; i++) {
     uint8_t bit{sprite_data};
-    uint8_t screen_pixel{pixels[(y_coord * Width) + x_coord]};
+    size_t pixel_location{y_coord * Width + x_coord};
+    uint8_t screen_pixel{pixels[pixel_location]};
 
     // Extract i_th bit starting from the left
     bit = (bit >> (7 - i)) & 1;
@@ -273,7 +275,7 @@ bool Display::draw_line(const uint8_t &sprite_data, int x_coord, int y_coord) {
     }
 
     screen_pixel ^= bit;
-    pixels[(y_coord * Width) + x_coord] = screen_pixel;
+    pixels[pixel_location] = screen_pixel;
 
     // Stop drawing if x coordinate exceeds screen dimensions
     x_coord++;

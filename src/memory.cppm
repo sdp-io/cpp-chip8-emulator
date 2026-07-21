@@ -36,7 +36,7 @@ export class Memory {
 public:
   Memory() { load_font(); }
 
-  uint8_t operator[](int index) const {
+  uint8_t operator[](const size_t &index) const {
     if (index < 0 || index >= RAM_Size) {
       throw std::out_of_range{"Index is out of range!"};
     }
@@ -44,7 +44,7 @@ public:
     return memory[index];
   }
 
-  uint8_t &operator[](int index) {
+  uint8_t &operator[](const size_t &index) {
     if (index < 0 || index >= RAM_Size) {
       throw std::out_of_range{"Index is out of range!"};
     }
@@ -65,18 +65,18 @@ private:
 };
 
 void Memory::load_font(void) {
-  for (auto i = 0; i < Font_Size; i++) {
+  for (size_t i = 0; i < Font_Size; i++) {
     memory[i] = Font_Data[i];
   }
 }
 
 void Memory::load_rom(std::fstream &rom) {
   char byte{};
-  int bytec{0};
+  size_t bytec{0};
 
   while (rom.get(byte)) {
     // First 512 bytes are reserved, so offset
-    memory[0x200 + bytec] = byte;
+    memory[0x200 + bytec] = static_cast<uint8_t>(byte);
     bytec++;
   }
 

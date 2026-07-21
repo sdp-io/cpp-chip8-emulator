@@ -3,6 +3,7 @@ module;
 #include "SDL3/SDL_error.h"
 #include "SDL3/SDL_init.h"
 #include "SDL3/SDL_log.h"
+#include <algorithm>
 #include <array>
 #include <memory>
 export module Audio;
@@ -55,13 +56,9 @@ int Audio::init_audio(void) {
   }
 
   // Fill square wave with amplitude values
-  for (size_t i{0}; i < Wave_Size / 2; i++) {
-    square_wave[i] = 3000;
-  }
+  std::fill(square_wave.begin(), square_wave.end() - 50, 3000);
 
-  for (size_t i{50}; i < Wave_Size; i++) {
-    square_wave[i] = -3000;
-  }
+  std::fill(square_wave.begin() + 50, square_wave.end(), -3000);
 
   audio.reset(raw_audio);
 
