@@ -8,6 +8,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+set(CMAKE_VERBOSE_MAKEFILE)
+
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 
@@ -20,7 +22,15 @@ target_sources(chip8
         src/cpu.cppm
         src/memory.cppm
         src/display.cppm
+        src/audio.cppm
 )
+
+target_compile_options(chip8
+  PRIVATE
+    -pedantic-errors
+    -Wall
+    -Wextra
+    -Wconversion)
 
 target_compile_features(chip8 PUBLIC cxx_std_20)
 target_link_libraries(chip8 PRIVATE SDL3::SDL3)
