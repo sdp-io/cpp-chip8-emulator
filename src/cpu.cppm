@@ -2,7 +2,6 @@ module;
 
 #include <algorithm>
 #include <cstdint>
-#include <format>
 #include <iostream>
 #include <iterator>
 #include <random>
@@ -98,6 +97,8 @@ public:
   void execute(struct Decoded_Inst &di, Memory &memory, Display &display);
 
   uint8_t get_register(const size_t address) { return registers[address]; }
+
+  uint8_t get_sound_timer(void) const { return sound_timer; }
 
 private:
   // First 512 bytes historically reserved for fonts and CHIP-8 architecture

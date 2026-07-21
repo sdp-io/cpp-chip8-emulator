@@ -6,6 +6,7 @@
 import CPU;
 import Memory;
 import Display;
+import Audio;
 
 int main() {
   using namespace std::chrono_literals;
@@ -19,6 +20,7 @@ int main() {
   chip8::Display display{};
   chip8::CPU cpu{};
   chip8::Memory memory{};
+  chip8::Audio audio{};
 
   std::cout << "Hello world!\n";
   std::string rom_path{"../../data/roms/Pong.ch8"};
@@ -38,6 +40,10 @@ int main() {
     auto loop_start{std::chrono::steady_clock::now()};
 
     cpu.decrement_timers();
+
+    if (cpu.get_sound_timer() > 0) {
+      audio.play_buzzer();
+    }
 
     for (int i{0}; i < cycles_per_frame; i++) {
       // Fetch

@@ -6,6 +6,7 @@ The following test ROMs included in `data/roms/` are created by [Tim Franssen](h
 * `flags.ch8`
 * `quirks.ch8`
 * `keypad.ch8`
+* `beeper.ch8`
 
 * **License:** GNU General Public License v3.0 (GPL-3.0)
 * **Original Source Code:** [CHIP-8 Test Suite](https://github.com/Timendus/chip8-test-suite)
