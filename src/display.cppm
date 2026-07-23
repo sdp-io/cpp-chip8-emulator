@@ -132,7 +132,6 @@ bool Display::poll_events(std::array<bool, Keypad_Size> &key_pad) {
     }
 
     if (event.type == SDL_EVENT_KEY_DOWN) {
-      std::cout << std::format("{}", event.key.key) << " pressed!\n";
       switch (event.key.scancode) {
       case SDL_SCANCODE_1:
         key_pad[0x0] = true;
