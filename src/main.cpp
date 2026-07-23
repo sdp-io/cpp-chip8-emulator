@@ -8,7 +8,17 @@ import Memory;
 import Display;
 import Audio;
 
-int main() {
+int main(int argc, char *argv[]) {
+  if (argc <= 1) {
+    if (argv[0]) {
+      std::cout << "Usage: " << argv[0] << " <ROM_Name>.ch8\n";
+    } else {
+      std::cout << "Usage: " << "./chip8 " << "<ROM_Name>.ch8\n";
+    }
+
+    return 1;
+  }
+
   using namespace std::chrono_literals;
 
   // 60Hz timers = 1 decrementation every 16.67ms
@@ -22,8 +32,8 @@ int main() {
   chip8::Memory memory{};
   chip8::Audio audio{};
 
-  std::cout << "Hello world!\n";
-  std::string rom_path{"../../data/roms/Pong.ch8"};
+  std::string rom_path{"../../data/roms/"};
+  rom_path += argv[1];
 
   std::fstream rom{rom_path, rom.binary | rom.in};
 
