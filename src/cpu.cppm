@@ -13,8 +13,6 @@ import Display;
 
 namespace chip8 {
 
-int random_int(const int &min, const int &max);
-
 constexpr size_t Register_Size{16};
 
 /**
@@ -110,6 +108,10 @@ private:
   std::array<uint8_t, Register_Size> registers{};
   uint8_t &flag_reg{registers[Register_Size - 1]};
 
+  // Random number generator for random instruction
+  std::mt19937 gen{std::random_device{}()};
+  std::uniform_int_distribution<int> distrib{0, 255};
+
   void jump(const uint16_t location) { pc = location; }
 
   void execute_DXYN(struct Decoded_Inst &di, Memory &memory, Display &display);
@@ -119,7 +121,7 @@ void CPU::execute(struct Decoded_Inst &di, Memory &memory, Display &display) {
   uint8_t val_x{registers[di.x]};
   uint8_t val_y{registers[di.y]};
 
-  int random_num{random_int(0, 16)};
+  int random_num{distrib(gen)};
 
   switch (di.opcode) {
   case 0x0:
@@ -326,16 +328,6 @@ void CPU::execute_DXYN(struct Decoded_Inst &di, Memory &memory,
       break;
     }
   }
-}
-
-int random_int(const int &min, const int &max) {
-  std::random_device rd;
-  std::mt19937 gen(rd());
-  std::uniform_int_distribution<> distrib(min, max);
-
-  int random_num{distrib(gen)};
-
-  return random_num;
 }
 
 } // namespace chip8
