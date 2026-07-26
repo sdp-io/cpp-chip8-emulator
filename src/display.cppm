@@ -13,7 +13,6 @@ module;
 #include <array>
 #include <cstddef>
 #include <cstdint>
-#include <format>
 #include <iostream>
 #include <memory>
 
