@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
   chip8::Memory memory{};
   chip8::Audio audio{};
 
-  std::string rom_path{"../../data/roms/"};
+  std::string rom_path{"./data/roms/"};
   rom_path += argv[1];
 
   std::fstream rom{rom_path, rom.binary | rom.in};

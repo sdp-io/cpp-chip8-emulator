@@ -28,7 +28,7 @@ Five independent C++20 named modules, each with a single responsibility:
 | `Audio` | `audio.cppm` | Square wave generation, SDL3 audio stream |
 | `main` | `main.cpp` | Emulation loop, `chrono`-based timing, argument parsing |stateless struct deleter
 
-The `Decoded_Inst` struct uses C++ bit fields to extract all instruction fields — opcode, x, y, nibble, nnn, and byte — from the raw 16-bit opcode in a single decode step.
+The `Decoded_Inst` struct utilizes C++ bit fields to extract all instruction fields: opcode, x, y, nibble, nnn, and byte, from the raw 16-bit opcode in a single decode step.
 
 ## Building
 
@@ -75,7 +75,7 @@ CHIP-8 Key    Keyboard
 A  0  B  F    Z  X  C  V
 ```
 
-## Known Limiations
+## Known Limitations
 
 - ROM path is currently hardcoded relative to `../../data/roms` requiring running the emulator from the build directory
 - CHIP-48 and SUPER-CHIP variants are not currently implemented (noted in TODO comments), ensure compatibility before loading a given ROM
