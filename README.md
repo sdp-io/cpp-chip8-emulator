@@ -16,6 +16,20 @@ Runs classic CHIP-8 ROMs including Pong as well as passing the majority of the i
 - RAII resource management, with SDL3 Window, Renderer, Texture, and AudioStream wrapped in `std::unique_ptr` with custom stateless deleters for zero overhead
 - C++20 modules (`.cppm`) utilized throughout instead of usual header files
 
+## Architecture
+
+Five independent C++20 named modules, each with a single responsibility:
+
+| Module | File | Responsibility |
+|---|---|---|
+| `CPU` | `cpu.cppm` | Fetch/decode/execute, all 35+ opcodes, register states, timers |
+| `Memory` | `memory.cppm` | 4KB RAM array, font loading, ROM loading, invariant-checked `operator[]` |
+| `Display` | `display.cppm` | 64×32 pixel framebuffer, XOR sprite rendering, SDL3 texture stream |
+| `Audio` | `audio.cppm` | Square wave generation, SDL3 audio stream |
+| `main` | `main.cpp` | Emulation loop, `chrono`-based timing, argument parsing |stateless struct deleter
+
+The `Decoded_Inst` struct uses C++ bit fields to extract all instruction fields — opcode, x, y, nibble, nnn, and byte — from the raw 16-bit opcode in a single decode step.
+
 ## Building
 
 ### Prerequisites
